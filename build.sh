@@ -3,7 +3,7 @@ set -eu
 
 # This MUST be an absolute path because dnf does not work with relative paths
 # as installation root.
-INSTROOT="$PWD/installroot"
+INSTROOT="${PWD}/installroot"
 
 # Initialize used variables
 IMAGENAME=""
@@ -29,7 +29,7 @@ if ! ARGS=$(getopt -o i:hu --long image:,help,update -n "build-podman" -- "$@");
 	help
 fi
 
-eval set -- "$ARGS"
+eval set -- "${ARGS}"
 
 while true; do
 	case "$1" in
@@ -55,7 +55,7 @@ while true; do
 	esac
 done
 
-if [ -z "$IMAGENAME" ]; then
+if [[ -z ${IMAGENAME}   ]]; then
 	echo "Error: Missing image name!"
 	help
 	exit 1
@@ -65,24 +65,25 @@ fi
 # shellcheck source=/dev/null
 . /etc/os-release
 
-if [ "$ID" != "fedora" ]; then
+if [[ ${ID} != "fedora"   ]]; then
 	echo "This script has to be run on Fedora."
 	exit 1
 fi
 
-if [ "$UPDATE" == "true" ]; then
+version=$(date -u +%Y%m%d.%H%M)
+if [[ ${UPDATE} == "true"   ]]; then
 	# Updatung the packagesw from inside the image does not need sudo permissions
 	# or a rootful container, so we do this as regulöar user.
 	podman build \
 		--platform linux/riscv64 \
-		--from "$IMAGENAME" \
+		--from "${IMAGENAME}" \
 		--squash-all \
-		--build-arg version="$(date -u +%Y%m%d.%H%M)" \
+		--build-arg version="${version}" \
 		--security-opt=label=type:unconfined_t \
 		-f Containerfile.update \
-		-t "$IMAGENAME" .
+		-t "${IMAGENAME}" .
 else
-	if [ -d "${INSTROOT}" ]; then
+	if [[ -d ${INSTROOT} ]]; then
 		sudo rm -rf "${INSTROOT}"
 	fi
 	sudo mkdir -p "${INSTROOT}"
@@ -106,9 +107,9 @@ else
 
 	# Build the container
 	sudo podman build \
-		--build-arg version="$(date -u +%Y%m%d.%H%M)" \
+		--build-arg version="${version}" \
 		--platform linux/riscv64 \
 		--squash-all \
 		--security-opt=label=type:unconfined_t \
-		-t "$IMAGENAME" .
+		-t "${IMAGENAME}" .
 fi
