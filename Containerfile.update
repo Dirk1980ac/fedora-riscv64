@@ -1,4 +1,4 @@
-FROM scratch as placeholder
+FROM scratch
 
 ARG version
 LABEL org.opencontainers.image.version=${version}

@@ -61,6 +61,13 @@ if [[ -z ${IMAGENAME}   ]]; then
 	exit 1
 fi
 
+PUSH_ARGS=(
+	--sign-by-sigstore-private-key "${HOME}/.podman/dirk1980.private"
+	--sign-passphrase-file "${HOME}/.podman/dirk1980.pw"
+	--authfile "${HOME}/.podman/dirk1980.json"
+	"${IMAGENAME}"
+)
+
 # Check if we are running in fedowa.
 # shellcheck source=/dev/null
 . /etc/os-release
@@ -82,6 +89,9 @@ if [[ ${UPDATE} == "true"   ]]; then
 		--security-opt=label=type:unconfined_t \
 		-f Containerfile.update \
 		-t "${IMAGENAME}" .
+
+	# Sign and Upload image to the registry if requested
+	podman push "${PUSH_ARGS[@]}"
 else
 	if [[ -d ${INSTROOT} ]]; then
 		sudo rm -rf "${INSTROOT}"
@@ -112,4 +122,7 @@ else
 		--squash-all \
 		--security-opt=label=type:unconfined_t \
 		-t "${IMAGENAME}" .
+
+	# Sign and Upload image to the registry if requested
+	sudo podman push "${PUSH_ARGS[@]}"
 fi
