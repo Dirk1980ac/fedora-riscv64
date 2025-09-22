@@ -1,7 +1,7 @@
 FROM scratch
 
-ARG version
-LABEL org.opencontainers.image.version=${version}
+ARG buildid
+LABEL org.opencontainers.image.version=${buildid}
 RUN <<EORUN
 set -eu
 dnf -y update --no-docs
