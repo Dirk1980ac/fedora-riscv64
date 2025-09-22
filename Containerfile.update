@@ -6,7 +6,5 @@ RUN <<EORUN
 set -eu
 dnf -y update --no-docs
 dnf -y clean all
-rm -rf /var/log/*
-rm -rf /var/cache/*
-rm -rf /var/tmo/*
+rm -rf /var/{log,cache,tmp,spool}/*
 EORUN
